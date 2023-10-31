@@ -10,71 +10,105 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="styles.css">
-  
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script src="main.js"></script>
 
 
+</head>
 <body>
-  <form>
+  <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Контрольные карты</a>
+      <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+        Добавить
+      </button>
+      <span class="navbar-text">
+        Панаскин Алексей 201-323
+      </span>
 
-    <div class="row mb-4">
+    </div>
+  </nav>
 
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
 
-      <div class="col">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
 
-        <h2>Карта качества продукции</h2>
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">Название продукции</label>
-          <input type="text" id="form6Example1" class="form-control" />
         </div>
 
+        <div class="modal-body">
 
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">Условное обозначение продукции</label>
-          <input type="text" id="form6Example1" class="form-control" />
-        </div>
+          <div class="modal-split">
 
+            <h2>Данные сотрудника ОТК</h2>
+            <div class="form-outline">
+              <label class="form-label" for="employee">ФИО сотрудника</label>
+              <input type="text" id="employee" class="form-control" />
+              <label class="form-label" for="employee_role">Должность </label>
+              <input type="text" id="employee_role" class="form-control" />
 
-
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">Код продукции</label>
-          <input type="text" id="form6Example1" class="form-control" />
-        </div>
-
-
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">Предприятие разработчик</label>
-          <input type="text" id="form6Example1" class="form-control" />
-
-          <div class="form-outline">
-            <label class="form-label" for="form6Example1">Предприятие изготовитеь</label>
-            <input type="text" id="form6Example1" class="form-control" />
-          </div>
-        </div>
-
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">Дата начала разработки ВСТАВИТЬ ДАТАПИКЕР</label>
-          <input type="text" id="form6Example1" class="form-control" />
-          <label class="form-label" for="form6Example1">Дата окночания разраотки</label>
-          <input type="text" id="form6Example1" class="form-control" />
-        </div>
-
-        <div class="form-outline">
-          <label class="form-label" for="form6Example1">ФИО </label>
-          <input type="text" id="form6Example1" class="form-control" />
-          <label class="form-label" for="form6Example1">Должность </label>
-          <input type="text" id="form6Example1" class="form-control" />
-
-          <h2>Общие данные о продукции</h2>
-
-          <div class="form-outline">
-            <label class="form-label" for="form6Example1">Назначение и область применения продукции</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+              <div class="form-outline">
+                <label class="form-label" for="report_date">Дата</label>
+                <input type="date" id="report_date" class="form-control" />
+              </div>
+            </div>
           </div>
 
-          <div class="form-outline">
-            <label class="form-label" for="form6Example1">Характеристка продукции - придумать че то с
-              радиокнопками</label>
-            <label class="form-label" for="form6Example1"></label>
+
+
+          <div class="modal-split">
+            <h2>Карта качества продукции</h2>
+            <div class="form-outline">
+              <label class="form-label" for="prod_name">Наименование продукции</label>
+              <input type="text" id="prod_name" class="form-control" />
+            </div>
+
+
+            <div class="form-outline">
+              <label class="form-label" for="prod_text">Условное обозначение продукции</label>
+              <input type="text" id="prod_text" class="form-control" />
+            </div>
+
+
+
+            <div class="form-outline">
+              <label class="form-label" for="prod_code">Код продукции</label>
+              <input type="text" id="prod_code" class="form-control" />
+            </div>
+
+
+            <div class="form-outline">
+              <label class="form-label" for="prod_developer">Предприятие разработчик</label>
+              <input type="text" id="prod_developer" class="form-control" />
+
+              <div class="form-outline">
+                <label class="form-label" for="prod_releaser">Предприятие изготовитеь</label>
+                <input type="text" id="prod_releaser" class="form-control" />
+              </div>
+            </div>
+
+            <div class="form-outline">
+              <label class="form-label" for="prod_description">Назначение и область применения
+                продукции</label>
+              <textarea class="form-control" id="prod_description" rows="3"></textarea>
+            </div>
+
+            <div class="form-outline">
+              <label class="form-label" for="prod_develop_date_start">Дата начала разработки</label>
+              <input type="date" id="prod_develop_date_start" class="form-control" />
+
+              <label class="form-label" for="prod_develop_date_end">Дата окночания разраотки</label>
+              <input type="date" id="prod_develop_date_end" class="form-control" />
+            </div>
+
+
+
+            <label class="form-label" for="prod_radio">Характеристка продукции</label>
             <div class="form-check">
               <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
                 checked>
@@ -89,7 +123,7 @@
               </label>
             </div>
 
-
+            <hr>
             <div class="form-check">
               <input class="form-check-input" type="radio" name="exampleRadios2" id="2" value="option1" checked>
               <label class="form-check-label" for="exampleRadios2">
@@ -99,22 +133,88 @@
             <div class="form-check">
               <input class="form-check-input" type="radio" name="exampleRadios2" id="exampleRadios2" value="option2">
               <label class="form-check-label" for="exampleRadios2">
-                для товаров народного потребления
+                Для товаров народного потребления
               </label>
             </div>
 
-            <div class="form-outline">
-              <label class="form-label" for="form6Example1">Номер опытного экземляра или партии</label>
-              <input type="text" id="form6Example1" class="form-control" />
+
+
+            <div>
+              <label class="form-label">Эскизное изображение</label>
+              <input class="form-control" id="prod_File" type="file" style="border: 0;">
             </div>
           </div>
 
+          <div class="modal-split">
+          
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+              <label class="form-check-label" for="flexRadioDefault1">
+                Единичный экземпляр
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+              <label class="form-check-label" for="flexRadioDefault2">
+                Несколько экзепляров (укажите количество)
+              </label>
 
+
+              <input type="number" name="chetyre">
+
+                
+            </div>
+
+
+          </div>
+
+
+          <div class="modal-split">
+
+            <img src="/original_sizes.png">
+            </div>
+
+            <div class="modal-split">
+              Деталь 1
+              <img src="/facti_sizes.png">
+              <br>
+              деталь 2
+              <img src="/facti_sizes.png">
+              <br>
+              .....
+              </div>
+
+
+
+          <div class="modal-footer">
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
 
 
 
+  <div class="row row-cols-1 row-cols-md-3 g-4" style="padding: 2%;">
+    <div class="col">
+      <div class="card">
+        <img src="" class="card-img-top" alt="Файл из prod_File">
+        <div class="card-body">
+          <h5 class="card-title">текст из поля prod_name</h5>
+          <p class="card-text">тескст из поля prod_description</p>
+        </div>
+      </div>
+    </div>
 
-  </form>
+    <div class="card">
+      <img src="" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
+          content. This content is a little bit longer.</p>
+      </div>
+    </div>
+  </div>
+
 </body>
-</head>
+</html>
