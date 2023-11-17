@@ -39,9 +39,9 @@ $(document).ready(function () {
 	  // Отправляем данные на сервер
 	  $.ajax({
 		type: "POST",
-		url: "save_data.php",
+		url: "/part/add",
 		data: {
-		  employee: employee,
+		  employee_name: employee,
 		  employee_role: employee_role,
 		  report_date: report_date,
 		  prod_name: prod_name,
