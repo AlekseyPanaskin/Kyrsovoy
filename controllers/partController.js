@@ -32,7 +32,14 @@ const addModel = async (req, res, next) => {
         prod_code: req.body.prod_code,
         prod_developer: req.body.prod_developer,
         prod_releaser: req.body.prod_releaser,
+        prod_description: req.body.prod_description,
+        prod_develop_date_start: req.body.prod_develop_date_start,
+        prod_develop_date_end: req.body.prod_develop_date_end,
+        prod_chr1: req.body.prod_chr1,
+        prod_chr2: req.body.prod_chr2,
+        prod_file: req.body.prod_file
     };
+    emptyToNull(model);
     
     try {
         const data = await partService.addModel(model);
@@ -42,6 +49,14 @@ const addModel = async (req, res, next) => {
         console.error(e);
         res.sendStatus(500);
     }
+}
+
+function emptyToNull(obj) {
+    Object.keys(obj).forEach(key => { 
+        if (!obj[key] || obj[key] == '') {
+            obj[key] = null
+        }
+    });
 }
 
 const editModel = async (req, res, next) => {
@@ -76,5 +91,5 @@ const deleteModel = async (req, res, next) => {
 
 
 export default {
-    addModel,
+    addModel
 }
