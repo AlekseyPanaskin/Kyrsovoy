@@ -41,11 +41,10 @@
 
         </div>
 
-        <div class="modal-body">
-
+        <div class="modal-body">       
           <div class="modal-split">
-
             <h2>Данные сотрудника ОТК</h2>
+
             <div class="form-outline">
               <label class="form-label" for="employee">ФИО сотрудника</label>
               <input type="text" id="employee" class="form-control" />
@@ -59,8 +58,6 @@
             </div>
           </div>
 
-
-
           <div class="modal-split">
             <h2>Карта качества продукции</h2>
             <div class="form-outline">
@@ -68,19 +65,15 @@
               <input type="text" id="prod_name" class="form-control" />
             </div>
 
-
             <div class="form-outline">
               <label class="form-label" for="prod_text">Условное обозначение продукции</label>
               <input type="text" id="prod_text" class="form-control" />
             </div>
 
-
-
             <div class="form-outline">
               <label class="form-label" for="prod_code">Код продукции</label>
               <input type="text" id="prod_code" class="form-control" />
             </div>
-
 
             <div class="form-outline">
               <label class="form-label" for="prod_developer">Предприятие разработчик</label>
@@ -106,18 +99,15 @@
               <input type="date" id="prod_develop_date_end" class="form-control" />
             </div>
 
-
-
             <label class="form-label" for="prod_radio">Характеристка продукции</label>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
-                checked>
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="forDefault" checked/>
               <label class="form-check-label" for="exampleRadios1">
                 Для типого представителя при разработке КУ на типоразмерный ряд
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
+              <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="forOther"/>
               <label class="form-check-label" for="exampleRadios2">
                 Другие случаи
               </label>
@@ -125,19 +115,17 @@
 
             <hr>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios2" id="2" value="option1" checked>
+              <input class="form-check-input" type="radio" name="exampleRadios2" id="2" value="industrialGoods" checked>
               <label class="form-check-label" for="exampleRadios2">
                 Для продукции производственно-технического назначения
               </label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="exampleRadios2" id="exampleRadios2" value="option2">
+              <input class="form-check-input" type="radio" name="exampleRadios2" id="exampleRadios2" value="consumerGoods">
               <label class="form-check-label" for="exampleRadios2">
                 Для товаров народного потребления
               </label>
             </div>
-
-
 
             <div>
               <label class="form-label">Эскизное изображение</label>
@@ -145,47 +133,28 @@
             </div>
           </div>
 
-          <div class="modal-split">
-          
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-              <label class="form-check-label" for="flexRadioDefault1">
-                Единичный экземпляр
-              </label>
-            </div>
-            <div class="form-check">
-              <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-              <label class="form-check-label" for="flexRadioDefault2">
-                Несколько экзепляров (укажите количество)
-              </label>
-
-
-              <input type="number" name="chetyre">
-
-                
+          <div id="referenceData" class="modal-split">
+            <h2>Объем партии и выборки</h2>        
+            <div class="input-group">
+              <span class="input-group-text">Объем партии – Объем выборки</span>
+              <input id="consignment" type="text" aria-label="Показатель" class="form-control">
+              <input id="factCount" type="text" name="factCount" class="form-control">
             </div>
 
+            <h2>Эталонные характеристики и показатели </h2>
 
+            <button id="btn_add_reference">Добавить ещё</button>
           </div>
-
-
-          <div class="modal-split">
-
-            <img src="/original_sizes.png">
-            </div>
-
-            <div class="modal-split">
-              Деталь 1
-              <img src="/facti_sizes.png">
-              <br>
-              деталь 2
-              <img src="/facti_sizes.png">
-              <br>
-              .....
-              </div>
-
-
-
+      
+          <div id="factData" class="modal-split">
+            <h2>Фактические характеристики и показатели </h2>
+            <table id="factTable" class="table">
+              <thead>
+              </thead>
+              <tbody>      
+              </tbody>
+            </table>
+          </div>
           <div class="modal-footer">
           </div>
         </div>
@@ -195,26 +164,18 @@
 
 
 
-  <div class="row row-cols-1 row-cols-md-3 g-4" style="padding: 2%;">
-    <div class="col">
+  <div class="row row-cols-3 row-cols-md-3 g-4" style="padding: 2%;">
+    
+    <% for (let vm of vms) { %>
       <div class="card">
-        <img src="" class="card-img-top" alt="Файл из prod_File">
+        <img src='<%= vm['filePath']%>' class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">текст из поля prod_name</h5>
-          <p class="card-text">тескст из поля prod_description</p>
+          <h5 class="card-title"><%= vm['name']%></h5>
+            <p class="card-text"><%= vm['releaser']%> - <%= vm['report_date']%></p>
+            <p class="card-text">Партия: <%= vm['consignment']%>. Выборка: <%= vm['selection']%></p>
         </div>
       </div>
-    </div>
-
-    <div class="card">
-      <img src="" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional
-          content. This content is a little bit longer.</p>
-      </div>
-    </div>
-  </div>
+    <% } %>
 
 </body>
 </html>
