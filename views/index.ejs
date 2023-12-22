@@ -133,97 +133,25 @@
             </div>
           </div>
 
-          <div class="modal-split">
+          <div id="referenceData" class="modal-split">
             <h2>Объем партии и выборки</h2>        
             <div class="input-group">
               <span class="input-group-text">Объем партии – Объем выборки</span>
-              <input type="text" aria-label="Показатель" class="form-control">
-              <input type="text" aria-label="Значение" class="form-control">
+              <input id="consignment" type="text" aria-label="Показатель" class="form-control">
+              <input id="factCount" type="text" name="factCount" class="form-control">
             </div>
 
             <h2>Эталонные характеристики и показатели </h2>
-            <div class="input-group">
-              <span class="input-group-text">Показатель – Значение - допуск</span>
-              <input type="text" aria-label="Показатель" class="form-control">
-              <input type="text" aria-label="Значение" class="form-control">
-              <input type="text" aria-label="Допуск" class="form-control">
-            </div>
-            <div class="input-group">
-              <span class="input-group-text">Показатель – Значение - допуск</span>
-              <input type="text" aria-label="Показатель" class="form-control">
-              <input type="text" aria-label="Значение" class="form-control">
-              <input type="text" aria-label="Допуск" class="form-control">
-            </div>
-            <div class="input-group">
-              <span class="input-group-text">Показатель – Значение - допуск</span>
-              <input type="text" aria-label="Показатель" class="form-control">
-              <input type="text" aria-label="Значение" class="form-control">
-              <input type="text" aria-label="Допуск" class="form-control">
-            </div>     
-            <div class="input-group">
-              <span class="input-group-text">Показатель – Значение - допуск</span>
-              <input type="text" aria-label="Показатель" class="form-control">
-              <input type="text" aria-label="Значение" class="form-control">
-              <input type="text" aria-label="Допуск" class="form-control">
-            </div>
 
-            <button>Добавить ещё</button>
+            <button id="btn_add_reference">Добавить ещё</button>
           </div>
       
-          <div class="modal-split">
+          <div id="factData" class="modal-split">
             <h2>Фактические характеристики и показатели </h2>
-            <table class="table">
+            <table id="factTable" class="table">
               <thead>
-                <tr>
-                  <th scope="col">№ Экземпляра</th>
-                  <th scope="col">L1</th>
-                  <th scope="col">L2</th>
-                  <th scope="col">L3</th>
-                </tr>
               </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">Эталонные показатели</th>
-                  <td>10</td>
-                  <td>15</td>
-                  <td>14</td>
-                </tr>
-                <tr>
-                  <th scope="row">1</th>
-                  <td>11,3</td>
-                  <td>14,9</td>
-                  <td>15</td>
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td>12</td>
-                  <td>15</td>
-                  <td>15</td>
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td>11,3</td>
-                  <td>16</td>
-                  <td>15</td>
-                </tr>
-                <tr>
-                  <th scope="row">4</th>
-                  <td>11</td>
-                  <td>11,6</td>
-                  <td>14,75</td>
-                </tr>
-                <tr>
-                  <th scope="row">5</th>
-                  <td><b>12</b></td>
-                  <td>15</td>
-                  <td><b>15</b></td>
-                </tr>
-                <tr>
-                  <th scope="row">6</th>
-                  <td>10</td>
-                  <td>15</td>
-                  <td>14,1</td>
-                </tr>
+              <tbody>      
               </tbody>
             </table>
           </div>
@@ -236,40 +164,18 @@
 
 
 
-  
-
   <div class="row row-cols-3 row-cols-md-3 g-4" style="padding: 2%;">
-    <div class="col">
+    
+    <% for (let vm of vms) { %>
       <div class="card">
-        <img  src="vtulka.jpg" class="card-img-top" alt="Файл из prod_File">
+        <img src='<%= vm['filePath']%>' class="card-img-top" alt="...">
         <div class="card-body">
-          <h5 class="card-title">Втулка - МПСТ 00.023.02</h5>
-          <p class="card-text">ПромСтрой - 20.11.14</p>
-          <p class="card-text">Партия: 5000. Выборка: 150</p>
+          <h5 class="card-title"><%= vm['name']%></h5>
+            <p class="card-text"><%= vm['releaser']%> - <%= vm['report_date']%></p>
+            <p class="card-text">Партия: <%= vm['consignment']%>. Выборка: <%= vm['selection']%></p>
         </div>
       </div>
-    </div>
-
-
-    
-    <div class="card" width="50px" height="50px">
-      <img  src="val.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Вал - МПСТ 00.013.06</h5>
-          <p class="card-text">МосМаш - 02.10.23</p>
-          <p class="card-text">Партия: 1000. Выборка: 40</p>
-      </div>
-    </div>
-    <div class="card">
-      <img src="shpilka.jpg" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">Шпилька - 01.006.02</h5>
-          <p class="card-text">МосМаш - 12.05.23</p>
-          <p class="card-text">Партия: 150. Выборка: 5</p>
-    </div>
-    
-  </div>
-  
+    <% } %>
 
 </body>
 </html>

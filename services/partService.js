@@ -16,7 +16,7 @@ const getModels = async () => {
 const getModel = async id => {
     try {
         const {data, error} = await supabase
-            .from('models')
+            .from('parts')
             .select()
             .match({id});
             
@@ -32,9 +32,38 @@ const addModel = async model => {
         const {data, error} = await supabase
             .from('parts')
             .insert(model)
+            .select('id');
 
         if (error) throw error
-        return data
+        return data[0];
+    } catch (e) {
+        throw e
+    }
+}
+
+const addReference = async model => {
+    try {
+        const {data, error} = await supabase
+            .from('references')
+            .insert(model)
+            .select('id');
+
+        if (error) throw error
+        return data[0];
+    } catch (e) {
+        throw e
+    }
+}
+
+const addFact = async model => {
+    try {
+        const {data, error} = await supabase
+            .from('facts')
+            .insert(model)
+            .select('id');
+
+        if (error) throw error
+        return data[0];
     } catch (e) {
         throw e
     }
@@ -70,5 +99,9 @@ const deleteModel = async id => {
 
 
 export default {
-    addModel
+    getModels,
+    getModel,
+    addModel,
+    addReference,
+    addFact
 }

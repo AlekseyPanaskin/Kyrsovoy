@@ -1,6 +1,9 @@
+import path from "path";
+import fs from "fs";
 import partService from '../services/partService.js';
+import { IndexViewModel } from "../viewModels/indexViewModel.js";
 
-const getModels = async (req, res, next) => {
+const getModel = async (req, res, next) => {
     try {
         const data = await partService.getModels();
         res.send(data);
@@ -11,15 +14,51 @@ const getModels = async (req, res, next) => {
     }
 }
 
-const getModel = async (req, res, next) => {
+const getModels = async (req, res, next) => {
     try {
-        const data = await partService.getModel(req.params["id"]);
-        res.send(data);
+        const parts = await partService.getModels();
+        
+        if (!parts) {
+            res.sendStatus(500);
+        }
+
+        let filesDir = path.join(path.dirname(process.argv[1]), 'public/storage/');
+        let fileNames = fs.readdirSync(filesDir, {withFileTypes: true})
+            .filter(item => !item.isDirectory())
+            .map(item => item.name);
+
+        let vms = [];
+
+        for (const part of parts) {
+            let vm = new IndexViewModel(
+                    part['prod_name'],
+                    part['prod_releaser'],
+                    new Date(part['report_date']).toLocaleDateString('ru-RU'),
+                    part['consignment'],
+                    part['selection'],
+                    fileNames.find(f => f == part['prod_file'])
+                );
+
+            vms.push(vm);
+        }
+
+        res.render('index', {
+            vms
+        });
         next();
     } catch(e) {
         console.error(e);
         res.sendStatus(500);
     }
+}
+
+
+function emptyToNull(obj) {
+    Object.keys(obj).forEach(key => { 
+        if (!obj[key] || obj[key] == '') {
+            obj[key] = null
+        }
+    });
 }
 
 const addModel = async (req, res, next) => {
@@ -37,7 +76,9 @@ const addModel = async (req, res, next) => {
         prod_develop_date_end: req.body.prod_develop_date_end,
         prod_chr1: req.body.prod_chr1,
         prod_chr2: req.body.prod_chr2,
-        prod_file: req.body.prod_file
+        prod_file: req.body.prod_file,
+        consignment: req.body.consignment,
+        selection: req.body.selection
     };
     emptyToNull(model);
     
@@ -51,13 +92,68 @@ const addModel = async (req, res, next) => {
     }
 }
 
-function emptyToNull(obj) {
-    Object.keys(obj).forEach(key => { 
-        if (!obj[key] || obj[key] == '') {
-            obj[key] = null
+
+const addRef = async (req, res, next) => {
+    let partId = req.body.partId;
+    
+    const models = [];
+
+    for (const ref of req.body.data) {
+        models.push({
+            partId,
+            name: ref['name'],
+            value: ref['value'],
+            threshold: ref['threshold']
+        })
+    }
+
+    let ids = [];
+
+    for (const model of models) {
+        emptyToNull(model);
+        
+        try {
+            const data = await partService.addReference(model);
+            ids.push(data);
+        } catch(e) {
+            console.error(e);
+            res.sendStatus(500);
         }
-    });
+    }
+    
+    next();
 }
+
+const addFact = async (req, res, next) => {
+    let partId = req.body.partId;
+    
+    const models = [];
+
+    for (const fact of req.body.data) {
+        models.push({
+            partId,
+            values: fact
+        })
+    }
+
+    let ids = [];
+
+    for (const model of models) {
+        emptyToNull(model);
+        
+        try {
+            const data = await partService.addFact(model);
+            ids.push(data);
+        } catch(e) {
+            console.error(e);
+            res.sendStatus(500);
+        }
+    }
+    
+    next();
+}
+
+
 
 const editModel = async (req, res, next) => {
     const model = {
@@ -91,5 +187,9 @@ const deleteModel = async (req, res, next) => {
 
 
 export default {
-    addModel
+    getModels,
+    getModel,
+    addModel,
+    addRef,
+    addFact
 }
