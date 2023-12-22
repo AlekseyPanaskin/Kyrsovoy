@@ -1,12 +1,20 @@
-import path from "path";
-import fs from "fs";
 import partService from '../services/partService.js';
-import { IndexViewModel } from "../viewModels/indexViewModel.js";
 
 const getModel = async (req, res, next) => {
     try {
-        const data = await partService.getModels();
-        res.send(data);
+        const vm = await partService.getModelDetails(req.params["id"]);
+        
+        if (!vm) {
+            res.sendStatus(500);
+        }
+
+        res.render('details', {
+            part: vm['part'],
+            refs: vm['references'],
+            facts: vm['facts'],
+            table: vm['refFactsTable']
+        });
+
         next();
     } catch(e) {
         console.error(e);
@@ -16,34 +24,14 @@ const getModel = async (req, res, next) => {
 
 const getModels = async (req, res, next) => {
     try {
-        const parts = await partService.getModels();
+        const partVMs = await partService.getModels();
         
-        if (!parts) {
+        if (!partVMs) {
             res.sendStatus(500);
         }
 
-        let filesDir = path.join(path.dirname(process.argv[1]), 'public/storage/');
-        let fileNames = fs.readdirSync(filesDir, {withFileTypes: true})
-            .filter(item => !item.isDirectory())
-            .map(item => item.name);
-
-        let vms = [];
-
-        for (const part of parts) {
-            let vm = new IndexViewModel(
-                    part['prod_name'],
-                    part['prod_releaser'],
-                    new Date(part['report_date']).toLocaleDateString('ru-RU'),
-                    part['consignment'],
-                    part['selection'],
-                    fileNames.find(f => f == part['prod_file'])
-                );
-
-            vms.push(vm);
-        }
-
         res.render('index', {
-            vms
+            vms: partVMs
         });
         next();
     } catch(e) {

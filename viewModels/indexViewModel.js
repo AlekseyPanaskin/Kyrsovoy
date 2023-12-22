@@ -1,5 +1,6 @@
 export class IndexViewModel {
-    constructor(name, releaser, report_date, consignment, selection, filePath) {
+    constructor(id, name, releaser, report_date, consignment, selection, filePath) {
+        this.id = id;
         this.name = name;
         this.releaser = releaser;
         this.report_date = report_date;
