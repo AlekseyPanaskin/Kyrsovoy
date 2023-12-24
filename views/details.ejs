@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="styles.css">
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
@@ -162,20 +161,54 @@
     </div>
   </div>
 
-
-
   <div class="row row-cols-3 row-cols-md-3 g-4" style="padding: 2%;">
     
-    <% for (let vm of vms) { %>
-      <div class="card">
-        <a href="/details/<%= vm['id'] %>"> <img src='/<%= vm['filePath']%>' class="card-img-top" alt="..."> </a>
-        <div class="card-body">
-          <h5 class="card-title"><%= vm['name']%></h5>
-            <p class="card-text"><%= vm['releaser']%> - <%= vm['report_date']%></p>
-            <p class="card-text">Партия: <%= vm['consignment']%>. Выборка: <%= vm['selection']%></p>
-        </div>
+    <div class="card">
+      <img src='/<%= part['prod_file']%>' class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5 class="card-title"><%= part['prod_name'] %></h5>
+        <p class="card-text"><%= part['prod_text']%> - <%= part['prod_code'] %></p>
+        <p class="card-text"><%= part['employee_name']%> - <%= part['employee_role'] %> - <%= new Date(part['report_date']).toLocaleDateString('ru-RU') %></p>
+        <p class="card-text">Разработано - <%= part['prod_developer']%> - <%= new Date(part['prod_develop_date_start']).toLocaleDateString('ru-RU') %></p>
+        <p class="card-text">Изготовлено - <%= part['prod_releaser']%> - <%= new Date(part['prod_develop_date_end']).toLocaleDateString('ru-RU') %></p>
+        <p class="card-text">Назначение и область применения продукции: <%= part['prod_description']%> </p>
+        <p class="card-text">Характеристка продукции:</p>
+        <p class="card-text"><%= part['prod_chr1']%> </p>
+        <p class="card-text"><%= part['prod_chr2']%> </p>
       </div>
-    <% } %>
+
+      <div id="factData" class="modal-split">
+        <h2>Фактические характеристики и показатели </h2>
+        <table id="factTable" class="table">
+          <thead>
+            <tr>
+              <% for (let i = 0; i < table[0].values.length; i++) { %>
+                <th>
+                  <%= table[0].values[i] %>
+                </th>
+              <% } %>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let i = 1; i < table.length; i++) { %>
+              <% if(table[i].isDefect == true) { %>
+                <tr style="background-color: rgb(255, 150, 150);">
+                <% } else if(table[i].isDefect == false) { %>
+                <tr style="background-color: rgb(145, 255, 145);">
+                <% } else { %>
+                <tr>
+                <% } %>
+                <% for (let j = 0; j < table[i].values.length; j++) { %>
+                  <td>
+                    <%= table[i].values[j] %>
+                  </td>
+                <% } %>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
 </body>
 </html>
