@@ -1,11 +1,15 @@
 import partService from '../services/partService.js';
 
-const getModel = async (req, res, next) => {
+const getPart = async (req, res, next) => {
     try {
-        const vm = await partService.getModelDetails(req.params["id"]);
+        const vm = await partService.getPartDetails(req.params["id"]);
         
         if (!vm) {
             res.sendStatus(500);
+        }
+
+        if (!vm.part) {
+            res.sendStatus(404);
         }
 
         res.render('details', {
@@ -22,9 +26,9 @@ const getModel = async (req, res, next) => {
     }
 }
 
-const getModels = async (req, res, next) => {
+const getParts = async (req, res, next) => {
     try {
-        const partVMs = await partService.getModels();
+        const partVMs = await partService.getParts();
         
         if (!partVMs) {
             res.sendStatus(500);
@@ -41,15 +45,7 @@ const getModels = async (req, res, next) => {
 }
 
 
-function emptyToNull(obj) {
-    Object.keys(obj).forEach(key => { 
-        if (!obj[key] || obj[key] == '') {
-            obj[key] = null
-        }
-    });
-}
-
-const addModel = async (req, res, next) => {
+const addPart = async (req, res, next) => {
     const model = {
         employee_name: req.body.employee_name,
         employee_role: req.body.employee_role,
@@ -71,7 +67,7 @@ const addModel = async (req, res, next) => {
     emptyToNull(model);
     
     try {
-        const data = await partService.addModel(model);
+        const data = await partService.addPart(model);
         res.send(data);
         next();
     } catch(e) {
@@ -120,7 +116,9 @@ const addFact = async (req, res, next) => {
     for (const fact of req.body.data) {
         models.push({
             partId,
-            values: fact
+            values: fact['values'],
+            is_defect: fact['isDefect'],
+            comment: fact['comment']
         })
     }
 
@@ -143,7 +141,7 @@ const addFact = async (req, res, next) => {
 
 
 
-const editModel = async (req, res, next) => {
+const editPart = async (req, res, next) => {
     const model = {
         id: req.params["id"],
         name: req.body.name,
@@ -162,9 +160,9 @@ const editModel = async (req, res, next) => {
     }
 }
 
-const deleteModel = async (req, res, next) => {
+const deletePart = async (req, res, next) => {
     try {
-        const data = await partService.deleteModel(req.params["id"]);
+        const data = await partService.deletePart(req.params["id"]);
         res.send(data);
         next();
     } catch(e) {
@@ -174,10 +172,21 @@ const deleteModel = async (req, res, next) => {
 }
 
 
+function emptyToNull(obj) {
+    Object.keys(obj).forEach(key => { 
+        if (!obj[key] || obj[key] == '') {
+            obj[key] = null
+        }
+    });
+}
+
+
 export default {
-    getModels,
-    getModel,
-    addModel,
+    getParts,
+    getPart,
+    addPart,
+    editPart,
+    deletePart,
     addRef,
     addFact
 }
