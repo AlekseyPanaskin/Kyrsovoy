@@ -77,6 +77,50 @@ const addPart = async (req, res, next) => {
 }
 
 
+const editPart = async (req, res, next) => {
+    const model = {
+        id: req.params["id"],
+        employee_name: req.body.employee_name,
+        employee_role: req.body.employee_role,
+        report_date: req.body.report_date,
+        prod_name: req.body.prod_name,
+        prod_text: req.body.prod_text,
+        prod_code: req.body.prod_code,
+        prod_developer: req.body.prod_developer,
+        prod_releaser: req.body.prod_releaser,
+        prod_description: req.body.prod_description,
+        prod_develop_date_start: req.body.prod_develop_date_start,
+        prod_develop_date_end: req.body.prod_develop_date_end,
+        prod_chr1: req.body.prod_chr1,
+        prod_chr2: req.body.prod_chr2,
+        prod_file: req.body.prod_file,
+        consignment: req.body.consignment,
+        selection: req.body.selection
+    };
+    emptyToNull(model);
+    
+    try {
+        const data = await partService.editPart(model);
+        res.send(data);
+        next();
+    } catch(e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+const deletePart = async (req, res, next) => {
+    try {
+        const data = await partService.deletePart(req.params["id"]);
+        res.send(data);
+        next();
+    } catch(e) {
+        console.error(e);
+        res.sendStatus(500);
+    }
+}
+
+
 const addRef = async (req, res, next) => {
     let partId = req.body.partId;
     
@@ -108,68 +152,106 @@ const addRef = async (req, res, next) => {
     next();
 }
 
-const addFact = async (req, res, next) => {
+
+const editRef = async (req, res, next) => {
     let partId = req.body.partId;
     
     const models = [];
 
-    for (const fact of req.body.data) {
+    for (const ref of req.body.data) {
         models.push({
             partId,
-            values: fact['values'],
-            is_defect: fact['isDefect'],
-            comment: fact['comment']
+            id: ref['id'],
+            name: ref['name'],
+            value: ref['value'],
+            threshold: ref['threshold']
         })
     }
-
-    let ids = [];
 
     for (const model of models) {
         emptyToNull(model);
         
         try {
-            const data = await partService.addFact(model);
-            ids.push(data);
+            const data = await partService.editReference(model);
         } catch(e) {
             console.error(e);
             res.sendStatus(500);
+            return;
         }
     }
     
+    res.sendStatus(200);
     next();
 }
 
 
-
-const editPart = async (req, res, next) => {
-    const model = {
-        id: req.params["id"],
-        name: req.body.name,
-        description: req.body.description,
-        photopath: req.files[0]?.path ?? req.file.path,
-        filepath: req.files[1]?.path
-    };
+const addFact = async (req, res, next) => {
+    let partId = req.body.partId;
     
-    try {
-        const data = await partService.editModel(model);
-        res.send(data);
-        next();
-    } catch(e) {
-        console.error(e);
-        res.sendStatus(500);
+    const models = [];
+
+    if (req.body.data && req.body.data.length > 0) { 
+        for (const fact of req.body.data) {
+            models.push({
+                partId,
+                values: fact['values'],
+                is_defect: fact['isDefect'],
+                comment: fact['comment']
+            })
+        }
+
+        let ids = [];
+
+        for (const model of models) {
+            emptyToNull(model);
+            
+            try {
+                const data = await partService.addFact(model);
+                ids.push(data);
+            } catch(e) {
+                console.error(e);
+                res.sendStatus(500);
+            }
+        }
     }
+
+    
+    next();
 }
 
-const deletePart = async (req, res, next) => {
-    try {
-        const data = await partService.deletePart(req.params["id"]);
-        res.send(data);
-        next();
-    } catch(e) {
-        console.error(e);
-        res.sendStatus(500);
+const editFact = async (req, res, next) => {
+    let partId = req.body.partId;
+    
+    const models = [];
+
+    if (req.body.data && req.body.data.length > 0) { 
+        for (const fact of req.body.data) {
+            models.push({
+                id: fact['id'],
+                partId,
+                values: fact['values'],
+                is_defect: fact['isDefect'],
+                comment: fact['comment']
+            })
+        }
+
+        for (const model of models) {
+            emptyToNull(model);
+            
+            try {
+                const data = await partService.editFact(model);
+            } catch(e) {
+                console.error(e);
+                res.sendStatus(500);
+                return;
+            }
+        }
     }
+
+    res.sendStatus(200);
+    next();
 }
+
 
 
 function emptyToNull(obj) {
@@ -188,5 +270,7 @@ export default {
     editPart,
     deletePart,
     addRef,
-    addFact
+    editRef,
+    addFact,
+    editFact
 }
