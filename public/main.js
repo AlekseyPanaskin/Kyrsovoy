@@ -35,7 +35,7 @@ $(document).ready(function () {
 			var consignment = $('#consignment').val();
 			var selection = $('#factCount').val();
 		
-			if (part && part['prod_file'] && !prod_file) {
+			if (isEdit && part && part['prod_file'] && !prod_file) {
 				prod_file = part['prod_file'];
 			}
 

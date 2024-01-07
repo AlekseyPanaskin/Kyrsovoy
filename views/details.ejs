@@ -220,7 +220,11 @@
             ticks: {
                 suggestedMin: refs[i].value * 0.99,
                 suggestedMax: refs[i].value * 1.01,
-            }
+            },
+            scaleLabel: {
+            display: true,
+            labelString: refs[i].name
+          }
         }]
     }
     }
