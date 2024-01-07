@@ -477,7 +477,7 @@ function createFactTable(headers, factCount) {
 				tr.appendChild(td);
 			}
 			
-			if (factData['values'].length > colsCount) {
+			if (factData['values'] && factData['values'].length > colsCount) {
 				let input = createInput(`id[${rowNumber}]`, factData['values'].at(-1), "hidden");
 				
 				tr.appendChild(input);
