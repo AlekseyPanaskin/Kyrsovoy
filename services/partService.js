@@ -128,43 +128,15 @@ const addPart = async model => {
     }
 }
 
-const addReference = async model => {
-    try {
-        const {data, error} = await supabase
-            .from('references')
-            .insert(model)
-            .select('id');
-
-        if (error) throw error
-        return data[0];
-    } catch (e) {
-        throw e
-    }
-}
-
-const addFact = async model => {
-    try {
-        const {data, error} = await supabase
-            .from('facts')
-            .insert(model)
-            .select('id');
-
-        if (error) throw error
-        return data[0];
-    } catch (e) {
-        throw e
-    }
-}
-
 const editPart = async model => {
     try {
         const {data, error} = await supabase
-            .from('models')
+            .from('parts')
             .update(model)
             .match({id: model.id});
 
         if (error) throw error
-        return data
+        return "OK";
     } catch (e) {
         throw e
     }
@@ -184,6 +156,60 @@ const deletePart = async id => {
     }
 }
 
+const addReference = async model => {
+    try {
+        const {data, error} = await supabase
+            .from('references')
+            .insert(model)
+            .select('id');
+
+        if (error) throw error
+        return data[0];
+    } catch (e) {
+        throw e
+    }
+}
+
+const editReference = async model => {
+    try {
+        const { error } = await supabase
+            .from('references')
+            .upsert(model);
+
+        if (error) throw error
+        return "OK";
+    } catch (e) {
+        throw e
+    }
+}
+
+const addFact = async model => {
+    try {
+        const {data, error} = await supabase
+            .from('facts')
+            .insert(model)
+            .select('id');
+
+        if (error) throw error
+        return data[0];
+    } catch (e) {
+        throw e
+    }
+}
+
+const editFact = async model => {
+    try {
+        const {error} = await supabase
+            .from('facts')
+            .upsert(model);
+
+        if (error) throw error
+        return "OK";
+    } catch (e) {
+        throw e
+    }
+}
+
 
 export default {
     getParts,
@@ -192,5 +218,7 @@ export default {
     editPart,
     deletePart,
     addReference,
-    addFact
+    editReference,
+    addFact,
+    editFact
 }

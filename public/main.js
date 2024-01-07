@@ -1,9 +1,8 @@
 let factValues = [];
+let isEdit = false;
 
 $(document).ready(function() {
   prep_modal();
-
-  addRefenceData();
 
   let btn = document.getElementById("btn_add_reference");
   btn.addEventListener("click", e => {
@@ -36,6 +35,10 @@ $(document).ready(function () {
 			var consignment = $('#consignment').val();
 			var selection = $('#factCount').val();
 		
+			if (part && part['prod_file'] && !prod_file) {
+				prod_file = part['prod_file'];
+			}
+
 			let data = {
 				employee_name,
 				employee_role,
@@ -59,16 +62,30 @@ $(document).ready(function () {
 
 			let partId;
 
-			$.ajax({
-				type: "POST",
-				url: "/add",
-				data: data,
-				async: false,
-				success: function (response) {
-					console.log(response);
-					partId = response['id'];
-				}
-			});
+			if (isEdit) {
+				partId = part['id'];
+				$.ajax({
+					type: "PUT",
+					url: `/edit/${partId}`,
+					data: data,
+					async: false,
+					success: function (response) {
+						console.log(response);
+					}
+				});
+			}
+			else {
+				$.ajax({
+					type: "POST",
+					url: "/add",
+					data: data,
+					async: false,
+					success: function (response) {
+						console.log(response);
+						partId = response['id'];
+					}
+				});
+			}
 
 					
 			let referenceDiv = document.getElementById("referenceData");
@@ -86,21 +103,48 @@ $(document).ready(function () {
 				let value = document.getElementsByName(`reference[${i}].value`)[0]?.value;
 				let threshold = document.getElementsByName(`reference[${i}].threshold`)[0]?.value;
 
-				referenceData['data'].push({
-					name,
-					value,
-					threshold
-				})
+				if (isEdit) {
+					let id = document.getElementsByName(`reference[${i}].id`)[0]?.value;
+					referenceData['data'].push({
+						id,
+						name,
+						value,
+						threshold
+					})
+				}
+				else {
+					referenceData['data'].push({
+						name,
+						value,
+						threshold
+					})
+				}
+
 			}
 
-			$.ajax({
-				type: "POST",
-				url: "/addRef",
-				data: referenceData,
-				success: function (response) {
-					console.log(response);
-				}
-			});
+			if (isEdit) {
+				$.ajax({
+					type: "PUT",
+					url: "/editRef",
+					data: referenceData,
+					async: false,
+					success: function (response) {
+						console.log(response);
+					}
+				});
+			}
+			else {
+				$.ajax({
+					type: "POST",
+					url: "/addRef",
+					data: referenceData,
+					async: false,
+					success: function (response) {
+						console.log(response);
+					}
+				});
+			}
+			
 
 
 
@@ -126,18 +170,37 @@ $(document).ready(function () {
 
 				row.isDefect = isDefect;
 				row.comment = comment;
+
+				if (isEdit) {
+					row.id = document.getElementsByName(`id[${i}]`)[0]?.value;
+				}
 				
 				factData.data.push(row);
 			}
 
-			$.ajax({
-				type: "POST",
-				url: "/addFact",
-				data: factData,
-				success: function (response) {
-					console.log(response);
-				}
-			});
+			if (isEdit) {
+				$.ajax({
+					type: "PUT",
+					url: "/editFact",
+					data: factData,
+					async: false,
+					success: function (response) {
+						console.log(response);
+					}
+				});
+			}
+			else {
+				$.ajax({
+					type: "POST",
+					url: "/addFact",
+					data: factData,
+					async: false,
+					success: function (response) {
+						console.log(response);
+					}
+				});
+			}
+			
 
 
 			if (fileInput.files.length > 0) {
@@ -149,6 +212,7 @@ $(document).ready(function () {
 					contentType: false,
 					processData: false,
 					cache: false,
+					async: false,
 					data: formData,
 					success: function(res){
 						console.log(res);
@@ -158,8 +222,8 @@ $(document).ready(function () {
 					}
 				})
 			}
-
-			location.reload();
+			
+			window.location.replace(location.href);
 		}
 		});
   });
@@ -399,8 +463,8 @@ function createFactTable(headers, factCount) {
 				let td = createTd();
 
 				let value = null;
-				if (factData['values'] && factValues['values'].length > i) {
-					value = factValues['values'][i];
+				if (factData['values'] && factData['values'].length - 1 > i) {
+					value = factData['values'][i];
 				}
 
 				let name = factData['inputNames'][i]
@@ -413,6 +477,11 @@ function createFactTable(headers, factCount) {
 				tr.appendChild(td);
 			}
 			
+			if (factData['values'].length > colsCount) {
+				let input = createInput(`id[${rowNumber}]`, factData['values'].at(-1), "hidden");
+				
+				tr.appendChild(input);
+			}
 
 			return tr;
 		}
@@ -462,17 +531,17 @@ function createFactTable(headers, factCount) {
 	}
 }
 
-function addRefenceData() {
+function addRefenceData(ref) {
 	let referenceData = document.getElementById("referenceData");
 
 	let divGroupCount = referenceData.querySelectorAll(".reference-group")?.length ?? 0;
 
-	let divGroup = createReferenceInputsRow(divGroupCount);
+	let divGroup = createReferenceInputsRow(divGroupCount, ref);
 
 	referenceData.insertBefore(divGroup, referenceData.lastElementChild);
 }
 
-function createReferenceInputsRow(num) {
+function createReferenceInputsRow(num, ref) {
 	let divGroup = document.createElement("div");
 	divGroup.classList.add("input-group");
 	divGroup.classList.add("reference-group");
@@ -481,22 +550,66 @@ function createReferenceInputsRow(num) {
 	span.classList.add("input-group-text");
 	span.innerText = "Показатель – Значение - допуск";
 
-	let inputName = createInput(`reference[${num}].name`);
-	let inputValue = createInput(`reference[${num}].value`);
-	let inputThreshold = createInput(`reference[${num}].threshold`);
+	let inputName = createInput(`reference[${num}].name`, ref?.name);
+	let inputValue = createInput(`reference[${num}].value`, ref?.value);
+	let inputThreshold = createInput(`reference[${num}].threshold`, ref?.threshold);
 
 	divGroup.appendChild(span);
 	divGroup.append(...[inputName, inputValue, inputThreshold]);
 
+	if (ref) {
+		let inputRefId = createInput(`reference[${num}].id`, ref.id);
+		inputRefId.type = "hidden";
+		divGroup.appendChild(inputRefId);
+	}
+
 	return divGroup;
 
 	
-	function createInput(name) {
+	function createInput(name, value) {
 		let input = document.createElement("input");
 		input.name = name;
 		input.classList.add("form-control");
 		input.type = "text";
 
+		if (value) {
+			input.value = value;
+		}
+
 		return input;
+	}
+}
+
+function fillValues() {
+	isEdit = true;
+	let btnAddRef = document.getElementById("btn_add_reference");
+	btnAddRef.style = "display: none";
+
+	let factCount = document.getElementById("factCount");
+	let consignment = document.getElementById("consignment");
+
+	factCount.setAttribute("readonly", "");
+	consignment.setAttribute("readonly", "");
+
+	factValues = Array.from(facts.map(f => [...f.values, f.is_defect, f.comment, f.id]));
+	
+	$('#employee').val(part['employee_name']);
+	$('#employee_role').val(part['employee_role']);
+	$('#report_date').val(new Date(part['report_date']).toISOString().slice(0, 10));
+	$('#prod_name').val(part['prod_name']);
+	$('#prod_text').val(part['prod_text']);
+	$('#prod_code').val(part['prod_code']);
+	$('#prod_developer').val(part['prod_developer']);
+	$('#prod_releaser').val(part['prod_releaser']);
+	$('#prod_description').val(part['prod_description']);
+	$('#prod_develop_date_start').val(new Date(part['prod_develop_date_start']).toISOString().slice(0, 10));
+	$('#prod_develop_date_end').val(new Date(part['prod_develop_date_end']).toISOString().slice(0, 10));
+	$(`input[name=exampleRadios][value="${part['prod_chr1']}"]`).prop('checked', true);
+	$(`input[name=exampleRadios2][value="${part['prod_chr2']}"]`).prop('checked', true);
+	$('#consignment').val(part['consignment']);
+	$('#factCount').val(part['selection']);
+
+	for (let ref of refs) {
+		addRefenceData(ref);
 	}
 }
