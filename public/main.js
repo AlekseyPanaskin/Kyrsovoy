@@ -1,3 +1,5 @@
+let factValues = [];
+
 $(document).ready(function() {
   prep_modal();
 
@@ -108,13 +110,24 @@ $(document).ready(function () {
 			};
 
 			for (let i = 0; i < rowsCount; i++) {
-				let row = [];
+				let row = {
+					values: [],
+					isDefect: false,
+					comment: null
+				};
 				for (let j = 0; j < columnsCount; j++) {
 					let cellValue = document.getElementsByName(`fact[${i}][${j}]`)[0]?.value;
 
-					row.push(cellValue);
+					row.values.push(cellValue);
 				}
-				factData['data'].push(row);
+
+				let isDefect = document.getElementsByName(`isDefect[${i}]`)[0]?.checked;
+				let comment = document.getElementsByName(`comment[${i}]`)[0]?.value;
+
+				row.isDefect = isDefect;
+				row.comment = comment;
+				
+				factData.data.push(row);
 			}
 
 			$.ajax({
@@ -261,9 +274,26 @@ function setupFactData() {
 		headers.push({
 			name,
 			value,
-			threshold
+			threshold,
+			type: 'number'
 		});
 	}
+
+	headers.push({
+		name: 'Брак',
+		value: null,
+		threshold: null,
+		type: 'checkbox',
+		inputName: 'isDefect'
+	});
+	
+	headers.push({
+		name: 'Комментарий',
+		value: null,
+		threshold: null,
+		type: 'text',
+		inputName: 'comment'
+	});
 
 	let factCount = document.getElementById("factCount").value;
 
@@ -319,8 +349,17 @@ function createFactTable(headers, factCount) {
 
 		let factTrs = []
 
+		let columnTypes = headers.map(h => h["type"]);
+		let inputNames = headers.map(h => h["inputName"]);
+
 		for (let row = 0; row < factCount; row++) {
-			let tr = createRowInput(row + 1, row, headers.length);
+			let factData = {
+				values: factValues[row],
+				types: columnTypes,
+				inputNames
+			}
+
+			let tr = createRowInput(row + 1, row, headers.length, factData);
 
 			factTrs.push(tr);
 		}
@@ -349,7 +388,7 @@ function createFactTable(headers, factCount) {
 			return tr;
 		}
 
-		function createRowInput(thValue, rowNumber, colsCount) {
+		function createRowInput(thValue, rowNumber, colsCount, factData) {
 			let tr = document.createElement("tr");
 			
 			let th = createTh(thValue);
@@ -359,17 +398,48 @@ function createFactTable(headers, factCount) {
 			for (let i = 0; i < colsCount; i++) {
 				let td = createTd();
 
-				let input = document.createElement("input");
-				input.classList.add("form-control");
-				input.type = "number";
-				input.step = "0.001";
-				input.name = `fact[${rowNumber}][${i}]`
+				let value = null;
+				if (factData['values'] && factValues['values'].length > i) {
+					value = factValues['values'][i];
+				}
+
+				let name = factData['inputNames'][i]
+				 ? `${factData['inputNames'][i]}[${rowNumber}]`
+				 : `fact[${rowNumber}][${i}]`;
+				let input = createInput(name, value, factData['types'][i]);
+				
 
 				td.appendChild(input);
 				tr.appendChild(td);
 			}
+			
 
 			return tr;
+		}
+		
+		function createInput(name, value, type) {
+			let input = document.createElement("input");
+		
+			input.classList.add("form-control");
+			input.name = name;
+
+			input.type = type;
+
+			if (value && value != null) {
+				input.value = value;
+			}
+
+			switch (type) {
+				case "number":
+					input.step = "0.001";
+					break;
+
+				case "checkbox":
+					input.checked = value;
+					break;
+			}
+
+			return input;
 		}
 	}
 	

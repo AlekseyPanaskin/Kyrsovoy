@@ -4,7 +4,7 @@ import fs from "fs";
 import { IndexViewModel } from "../viewModels/indexViewModel.js";
 import { PartDetailsViewModel } from "../viewModels/partDetailsViewModel.js";
 
-const getModels = async () => {
+const getParts = async () => {
     const {data, error} = await supabase
         .from('parts')
         .select();
@@ -35,7 +35,7 @@ const getModels = async () => {
     return vms;
 }
 
-const getModelDetails = async id => {
+const getPartDetails = async id => {
     const part = await supabase
         .from('parts')
         .select()
@@ -66,19 +66,19 @@ const getModelDetails = async id => {
             
             values: [
                 '№ экземпляра',
-                ...references.data.map(r => r['name'])
+                ...[...references.data.map(r => r['name']), 'Брак', 'Комментарий']
             ]
         },
         {
             values: [
                 'Эталонные показатели',
-                ...references.data.map(r => r['value'])
+                ...[...references.data.map(r => r['value']), null, null]
             ]
         },
         {
             values: [
                 'Допуски',
-                ...references.data.map(r => r['threshold'])
+                ...[...references.data.map(r => r['threshold']), null, null]
             ]
         }
     ]
@@ -89,19 +89,21 @@ const getModelDetails = async id => {
         const fact = facts.data[i];
         let isDefect = false;
 
-        for (let j = 0; j < references.data.length; j++) {
-            const ref = references.data[j];
-            const factValue = fact['values'][j];
-
-            if (Math.abs(factValue - ref['value']) > ref['threshold']) {
-                isDefect = true;
-                break;
+        if (fact['values']) {
+            for (let j = 0; j < references.data.length; j++) {
+                const ref = references.data[j];
+                const factValue = fact['values'][j];
+    
+                if (fact['is_defect'] || Math.abs(factValue - ref['value']) - ref['threshold'] > 0.00000001) {
+                    isDefect = true;
+                    break;
+                }
             }
         }
 
         let row = {
             isDefect,
-            values: [i+1, ...fact['values']]
+            values: [i+1, ...(fact['values'] ?? Array(references.data.length).fill(null)), fact['is_defect'] ? "+": "-", fact['comment']]
         }
 
         refFactsTable.push(row);
@@ -112,7 +114,7 @@ const getModelDetails = async id => {
     return vm;
 }
 
-const addModel = async model => {
+const addPart = async model => {
     try {
         const {data, error} = await supabase
             .from('parts')
@@ -154,7 +156,7 @@ const addFact = async model => {
     }
 }
 
-const editModel = async model => {
+const editPart = async model => {
     try {
         const {data, error} = await supabase
             .from('models')
@@ -168,10 +170,10 @@ const editModel = async model => {
     }
 }
 
-const deleteModel = async id => {
+const deletePart = async id => {
     try {
         const {data, error} = await supabase
-            .from('models')
+            .from('parts')
             .delete()
             .match({id});
 
@@ -184,9 +186,11 @@ const deleteModel = async id => {
 
 
 export default {
-    getModels,
-    getModelDetails,
-    addModel,
+    getParts,
+    getPartDetails,
+    addPart,
+    editPart,
+    deletePart,
     addReference,
     addFact
 }
