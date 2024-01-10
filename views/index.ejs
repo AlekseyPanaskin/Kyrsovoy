@@ -52,13 +52,13 @@
 
   <%-include('modal.ejs') %>
 
-  <div class="row row-cols-3 row-cols-md-4 g-4" style="margin: 1%;">
+  <div class="row row-cols-1 row-cols-md-4 g-4" style="margin: 1%;">
     
 
 
     <% for (let vm of vms) { %>
       <a href="/details/<%= vm['id'] %>" >
-      <div class="card" style="margin: 3%;">
+      <div class="card" style="margin: 2%; width: 500px; height: 500px;">
          <img src='/storage/<%= vm['filePath']%>' class="card-img-top" alt="..."> 
         <div class="card-body" style="font-size: 22px;">
           <h5 class="card-title"><%= vm['name']%></h5>
